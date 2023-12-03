@@ -1,0 +1,77 @@
+--------------------------------------------------------------------------------------------
+環境確認
+--------------------------------------------------------------------------------------------
+% node -v                                                                                                                                                    (git)-[main]
+v21.2.0
+
+% npm -v                                                                                                                                                     (git)-[main]
+10.2.3
+
+--------------------------------------------------------------------------------------------
+package.json作成
+--------------------------------------------------------------------------------------------
+npm init
+
+>>> command log
+% npm init                                                                                                                                                   (git)-[main]
+This utility will walk you through creating a package.json file.
+It only covers the most common items, and tries to guess sensible defaults.
+
+See `npm help init` for definitive documentation on these fields
+and exactly what they do.
+
+Use `npm install <pkg>` afterwards to install a package and
+save it as a dependency in the package.json file.
+
+Press ^C at any time to quit.
+package name: (practice1)
+version: (1.0.0)
+description:
+entry point: (index.js)
+test command:
+git repository:
+keywords:
+author:
+license: (ISC)
+About to write to /Users/murahata/Projects/metaps-payment/htk-electron/practice1/package.json:
+
+{
+  "name": "practice1",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
+
+
+Is this OK? (yes) yes
+npm notice
+npm notice New patch version of npm available! 10.2.3 -> 10.2.4
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v10.2.4
+npm notice Run npm install -g npm@10.2.4 to update!
+npm notice
+<<<
+
+--------------------------------------------------------------------------------------------
+package.json修正
+--------------------------------------------------------------------------------------------
+(1) package.jsonの「"main": "index.js",」を「"main": "main.js",」に書き換え
+(2) 「"start": "electron ."」をpackage.jsonのscriptsに追加
+(3) ライセンスはチュートリアル通りMITに変更しておく
+
+--------------------------------------------------------------------------------------------
+package-lock.json作成
+--------------------------------------------------------------------------------------------
+npm install electron --save-dev
+
+package.jsonに以下が追記されます（バージョンは実行時期により変化）
+>>>
+  "devDependencies": {
+    "electron": "^27.1.3"
+  }
+<<<
+
