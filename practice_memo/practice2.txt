@@ -1,0 +1,129 @@
+--------------------------------------------------------------------------------------------
+環境確認
+--------------------------------------------------------------------------------------------
+% node -v                                                                                                                                                    (git)-[main]
+v21.2.0
+
+% npm -v                                                                                                                                                     (git)-[main]
+10.2.3
+
+--------------------------------------------------------------------------------------------
+IPC（プロセス間通信）とは
+--------------------------------------------------------------------------------------------
+
+・main.js（メインプロセス）
+・preload.js（メインプロセスとレンダラープロセスの橋渡し）
+・rederer.js（レンダラープロセス）
+
+======================================================
+(1) メインプロセスでレンダラー側で使用させたい処理を記述
+======================================================
+例
+>>>
+const xxx = (e) => {
+    addWindow.close()
+}
+ipcMain.handle('xxx_channel', xxx)
+<<<
+↑ 呼び出し可能な IPC のハンドラーを追加します。このハンドラーは、レンダラーが ipcRenderer.invoke(channel, ...args) を呼び出すたびに呼び出されます。
+Adds a handler for an invokeable IPC. This handler will be called whenever a renderer calls ipcRenderer.invoke(channel, ...args).
+
+======================================================
+(2) セキュリティ上レンダラープロセスから呼び出すのは危険な為、
+contextBridge.exposeInMainWorldを利用して、preload.jsでレンダラーが呼び出せるように登録を行います
+======================================================
+例
+>>>
+contextBridge.exposeInMainWorld("xxxDi", {
+    // レンダラー側で「window.xxxDi.zzz()」で呼び出せるようになります
+    zzz() {
+        ipcRenderer.invoke('xxx_channel');
+    }
+})
+<<<
+
+======================================================
+(3) レンダラー側からメインプロセスの処理を呼び出します
+======================================================
+
+例
+>>>
+const button = document.querySelector("#button_id");
+button.addEventListener('click', async (e) => {
+    window.xxxDi.zzz();
+})
+<<<
+
+--------------------------------------------------------------------------------------------
+practice2 プロジェクト準備
+--------------------------------------------------------------------------------------------
+cd practice2
+npm init
+>>>
+% npm init                                                                                                                                                   (git)-[main]
+This utility will walk you through creating a package.json file.
+It only covers the most common items, and tries to guess sensible defaults.
+
+See `npm help init` for definitive documentation on these fields
+and exactly what they do.
+
+Use `npm install <pkg>` afterwards to install a package and
+save it as a dependency in the package.json file.
+
+Press ^C at any time to quit.
+package name: (practice2)
+version: (1.0.0)
+description:
+entry point: (index.js) main.js
+test command:
+git repository:
+keywords:
+author:
+license: (ISC) MIT
+About to write to /Users/murahata/Projects/metaps-payment/htk-electron/practice2/package.json:
+
+{
+  "name": "practice2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT"
+}
+
+
+Is this OK? (yes)
+<<<
+
+--------------------------------------------------------------------------------------------
+package.json 追記
+--------------------------------------------------------------------------------------------
+「"start": "electron ."」をpackage.jsonのscriptsに追加
+
+--------------------------------------------------------------------------------------------
+コマンド実行
+--------------------------------------------------------------------------------------------
+npm install electron --save-dev
+
+package.jsonに以下が追記されます（バージョンは実行時期により変化）
+>>>
+  "devDependencies": {
+    "electron": "^27.1.3"
+  }
+<<<
+
+--------------------------------------------------------------------------------------------
+コマンド実行
+--------------------------------------------------------------------------------------------
+npm start
+
+＝＞この時点では、main entryがないので、エラーが出るのみ
+
+--------------------------------------------------------------------------------------------
+index.html, main.js, preload.jsを配置
+--------------------------------------------------------------------------------------------
+ブラウザが起動して、Hello Worldが確認できたら修正に入る
+
