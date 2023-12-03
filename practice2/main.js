@@ -1,7 +1,7 @@
 // main.js
 
 // このモジュールはアプリケーションの生き死にを制御し、ネイティブブラウザウインドウを作成します
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, ipcMain} = require('electron')
 const path = require('node:path')
 
 const createWindow = () => {
@@ -40,6 +40,12 @@ app.whenReady().then(() => {
 app.on('window-all-closed', () => {
     if (process.platform !== 'darwin') app.quit()
 })
+
+// (A-1)メインウィンドゥの終了処理を、レンダラー側から呼び出せるように、disposeMainWindowChannelというチャネル名で登録
+const disposeMainWindow = (e) => {
+    app.quit()
+}
+ipcMain.handle('disposeMainWindowChannel', disposeMainWindow)
 
 // このファイルでは、アプリ内のとある他のメインプロセスコードを
 // インクルードできます。 

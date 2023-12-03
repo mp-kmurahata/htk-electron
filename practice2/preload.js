@@ -1,14 +1,23 @@
-// preload.js
-
+// *************************************************************************************
 // プリロードプロセスでは Node.js の全 API が利用可能です。
 // Chrome 拡張機能と同じサンドボックスも持っています。
-window.addEventListener('DOMContentLoaded', () => {
-    const replaceText = (selector, text) => {
-        const element = document.getElementById(selector)
-        if (element) element.innerText = text
-    }
+// *************************************************************************************
 
-    for (const dependency of ['chrome', 'node', 'electron']) {
-        replaceText(`${dependency}-version`, process.versions[dependency])
+// [memo] importを利用する場合、以下エラーが発生した
+// >>>
+// Unable to load preload script:
+// SyntaxError: Cannot use import statement outside a module
+// <<<
+// import {contextBridge, ipcRenderer} from "electron"
+
+const { contextBridge, ipcRenderer} = require('electron')
+
+// ================================================================
+// index.html用
+// ================================================================
+contextBridge.exposeInMainWorld("indexDi", {
+    // (A-2)レンダラー側で「window.indexDi.callDisposeMainWindow()」で呼び出せるようになります
+    callDisposingMainWindow() {
+        ipcRenderer.invoke('disposeMainWindowChannel')
     }
 })
