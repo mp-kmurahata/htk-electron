@@ -1,2 +1,5 @@
 .idea
 node_modules
+*-darwin-x64
+.DS_Store
+memo.txt
